@@ -1,0 +1,78 @@
+{
+  "limiarRevisao": 40,
+  "limiarNegacao": 70,
+  "regras": [
+    {
+      "id": "valor-alto",
+      "nome": "Valor alto",
+      "descricao": "Compras acima de R$ 5.000 merecem atenção.",
+      "expressao": "valor > 5000",
+      "pontuacao": 30,
+      "acao": "Pontuar"
+    },
+    {
+      "id": "exterior-sem-cartao",
+      "nome": "Compra no exterior sem cartão presente",
+      "descricao": "Transação online fora do Brasil.",
+      "expressao": "pais != \"BR\" E NAO cartao_presente",
+      "pontuacao": 25,
+      "acao": "Pontuar"
+    },
+    {
+      "id": "rajada-no-cartao",
+      "nome": "Rajada no mesmo cartão",
+      "descricao": "Cinco ou mais compras anteriores no mesmo cartão em 10 minutos.",
+      "expressao": "contagem(\"cartao\", \"10m\") >= 5",
+      "pontuacao": 40,
+      "acao": "Pontuar"
+    },
+    {
+      "id": "gasto-acumulado",
+      "nome": "Gasto acumulado na hora",
+      "descricao": "Soma da última hora mais a compra atual passa de R$ 10.000.",
+      "expressao": "soma(\"valor\", \"cartao\", \"1h\") + valor > 10000",
+      "pontuacao": 35,
+      "acao": "Pontuar"
+    },
+    {
+      "id": "muitos-paises",
+      "nome": "Vários países em 24 horas",
+      "descricao": "Cartão usado em três ou mais países diferentes em um dia.",
+      "expressao": "distintos(\"pais\", \"cartao\", \"24h\") >= 2 E NAO (pais EM [\"BR\"] E distintos(\"pais\", \"cartao\", \"24h\") < 2)",
+      "pontuacao": 50,
+      "acao": "Pontuar"
+    },
+    {
+      "id": "madrugada-valor-medio",
+      "nome": "Madrugada com valor relevante",
+      "descricao": "Entre 1h e 5h com valor acima de R$ 1.000.",
+      "expressao": "entre(hora, 1, 5) E valor > 1000",
+      "pontuacao": 15,
+      "acao": "Pontuar"
+    },
+    {
+      "id": "velocidade-impossivel",
+      "nome": "Velocidade impossível",
+      "descricao": "País diferente da compra anterior em menos de 30 minutos.",
+      "expressao": "segundos_desde_ultima(\"cartao\") < 1800 E distintos(\"pais\", \"cartao\", \"30m\") >= 1 E NAO (distintos(\"pais\", \"cartao\", \"30m\") == 1 E pais EM [pais])",
+      "pontuacao": 45,
+      "acao": "Pontuar",
+      "ativa": false
+    },
+    {
+      "id": "comerciante-bloqueado",
+      "nome": "Comerciante em lista negra",
+      "expressao": "maiusculo(comerciante) EM [\"CASSINO-X\", \"LOJA-FANTASMA\"]",
+      "pontuacao": 0,
+      "acao": "Negar"
+    },
+    {
+      "id": "cliente-confiavel",
+      "nome": "Cliente com histórico confiável",
+      "descricao": "Clientes marcados como VIP passam direto até R$ 20.000.",
+      "expressao": "extras.segmento == \"vip\" E valor <= 20000",
+      "pontuacao": 0,
+      "acao": "Aprovar"
+    }
+  ]
+}
